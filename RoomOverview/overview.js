@@ -16,6 +16,8 @@ handleMessage=function(data){
  if(!next||!Array.isArray(next.lights))return;
  renderRoom({...next,showTitle:false,showSummary:false});
  const title=String(next.title||'Raum');roomTitle.textContent=title;roomTitle.title=title;
+ roomTitle.hidden=next.showTitle===false;
+ head.hidden=next.showTitle===false;
  target=Number.isInteger(next.targetCategory)&&next.targetCategory>0?next.targetCategory:0;
  tile.setAttribute('tabindex',target?'0':'-1');tile.setAttribute('aria-disabled',String(!target));tile.setAttribute('aria-label',title+' öffnen');arrow.hidden=!target;
  note.textContent=target?'':'Bitte eine andere Raumkachel-Instanz oder Kategorie als Ziel auswählen.';note.hidden=!!target;

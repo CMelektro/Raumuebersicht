@@ -1,8 +1,10 @@
 {
   "elements": [
-    {"type":"Label","caption":"Raumübersicht 1.0.3 · eigenständige Anzeige- und Navigationskachel"},
+    {"type":"Label","caption":"Raumübersicht 1.0.4 · eigenständige Anzeige- und Navigationskachel"},
     {"type":"ExpansionPanel","caption":"Allgemein","items":[
       {"type":"ValidationTextBox","name":"Title","caption":"Raumname (auch Instanzname)"},
+      {"type":"CheckBox","name":"ShowTitle","caption":"Titel anzeigen"},
+      {"type":"Label","caption":"Blendet die eigene Überschrift in der Kachel ein oder aus. Der äußere Symcon-Titel wird dadurch nicht verändert."},
       {"type":"Select","name":"RoomStyle","caption":"Raummotiv","options":[
         {"caption":"Küche","value":"kitchen"},{"caption":"Eingangsbereich","value":"hall"},{"caption":"Durchgangsflur","value":"corridor"},{"caption":"Wohnzimmer","value":"living"},{"caption":"Esszimmer","value":"dining"},{"caption":"Gäste-WC","value":"guest_wc"},{"caption":"Kinderzimmer","value":"children"},{"caption":"Elternschlafzimmer","value":"bedroom"},{"caption":"Treppenhaus","value":"staircase"},{"caption":"Büro","value":"office"},{"caption":"Hauswirtschaftsraum","value":"utility"},{"caption":"Technikraum","value":"technical"},{"caption":"Abstellraum","value":"storage"},{"caption":"Neutral","value":"neutral"}
       ]},

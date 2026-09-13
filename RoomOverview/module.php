@@ -9,6 +9,7 @@ class Raumübersicht extends IPSModule
     {
         parent::Create();
         $this->RegisterPropertyString('Title', 'Küche');
+        $this->RegisterPropertyBoolean('ShowTitle', true);
         $this->RegisterPropertyString('RoomStyle', 'kitchen');
         $this->RegisterPropertyInteger('TargetCategory', 0);
         $this->RegisterPropertyInteger('BackgroundColor', 2105636);
@@ -99,7 +100,7 @@ class Raumübersicht extends IPSModule
         $validTarget = $target > 0 && $target !== $this->InstanceID
             && (IPS_CategoryExists($target) || IPS_InstanceExists($target));
         $result = [
-            'title' => $this->ReadPropertyString('Title'), 'showTitle' => false, 'showSummary' => false,
+            'title' => $this->ReadPropertyString('Title'), 'showTitle' => $this->ReadPropertyBoolean('ShowTitle'), 'showSummary' => false,
             'room' => $this->ReadPropertyString('RoomStyle'),
             'backgroundColor' => '#' . sprintf('%06X', $this->ReadPropertyInteger('BackgroundColor')),
             'textColor' => '#' . sprintf('%06X', $this->ReadPropertyInteger('TextColor')),

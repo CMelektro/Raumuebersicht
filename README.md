@@ -1,4 +1,4 @@
-# Raumübersicht 1.0.3
+# Raumübersicht 1.0.4
 
 Korrektur in 1.0.2: Die HTML-Darstellung verwendet den mit Symcon 9.0 kompatiblen Visualisierungstyp 1. Typ 2 steht erst ab Symcon 9.1 zur Verfügung.
 
@@ -39,3 +39,7 @@ Das Ziel muss in derselben Visualisierung erreichbar sein. Die Navigation verwen
 Den Inhalt dieses Ordners in das bestehende Raumübersicht-Repository hochladen und die Bibliothek in Symcon auf **1.0.3 / Build 4** aktualisieren. Danach die Übersicht öffnen, unter Allgemein die gewünschte Raumkachel-Instanz als Ziel auswählen und übernehmen. Bestehende Statusvariablen bleiben erhalten.
 
 Navigation: https://www.symcon.de/de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/html-sdk/openobject/
+
+## Version 1.0.4 / Build 5
+
+Unter Allgemein lässt sich die eigene Überschrift jetzt über „Titel anzeigen“ deaktivieren. Der Raumname im Objektbaum und der äußere Symcon-Titel bleiben unverändert. Grafik, Status und Navigation funktionieren auch mit deaktivierter Überschrift. Zum Update den entpackten Inhalt in das bestehende Raumübersicht-Repository hochladen, in Symcon aktualisieren und die Einstellungen übernehmen.

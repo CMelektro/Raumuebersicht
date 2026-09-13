@@ -22,6 +22,7 @@ handleMessage=function(data){
  tile.setAttribute('tabindex',target?'0':'-1');tile.setAttribute('aria-disabled',String(!target));tile.setAttribute('aria-label',title+' öffnen');arrow.hidden=!target;
  note.textContent=target?'':'Bitte eine andere Raumkachel-Instanz oder Kategorie als Ziel auswählen.';note.hidden=!!target;
  const stats=[];
+ if(next.climate?.enabled){const t=next.climate.actual;stats.push({text:typeof t==='number'&&Number.isFinite(t)?'Raumtemperatur: '+t.toLocaleString('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1})+' °C':'Raumtemperatur unbekannt',on:false})}
  for(const [items,singular,plural] of [[next.lights,'Lichtkreis','Lichtkreisen'],[next.sockets||[],'Schaltkreis','Schaltkreisen']]){
   const active=items.filter(d=>d.enabled);if(!active.length)continue;
   const on=active.filter(d=>d.on===true).length,unknown=active.filter(d=>d.on!==true&&d.on!==false).length;

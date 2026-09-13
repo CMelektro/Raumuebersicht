@@ -3,8 +3,10 @@
   "name": "Raumübersicht",
   "author": "CMelektro",
   "url": "",
-  "compatibility": {"version": "9.0"},
-  "version": "1.0.4",
-  "build": 5,
+  "compatibility": {
+    "version": "9.0"
+  },
+  "version": "1.1.0",
+  "build": 6,
   "date": 0
 }

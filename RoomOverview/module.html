@@ -11,6 +11,9 @@
 <main id="tile" class="tile"><header id="header"><h1 id="title"></h1><div class="summary" id="summary"><span class="dot" id="dot"></span><span id="summaryText"></span></div></header>
 <section class="scene-wrap" aria-label="Raumansicht"><svg id="scene" class="scene" viewBox="0 0 1000 650" role="img" aria-label="Raum mit aktivierten Geräten"><defs>
 <radialGradient id="wallShade"><stop stop-color="#ffffff" stop-opacity=".035"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+<linearGradient id="furnitureMaterial" x2=".3" y2="1"><stop stop-color="#454642"/><stop offset="1" stop-color="#292c2d"/></linearGradient>
+<linearGradient id="cabinetMaterial" x2="1" y2="1"><stop stop-color="#373c3d"/><stop offset="1" stop-color="#272a2b"/></linearGradient>
+<linearGradient id="floorMaterial" x2="0" y2="1"><stop stop-color="#a69b80" stop-opacity=".025"/><stop offset="1" stop-color="#a69b80" stop-opacity=".10"/></linearGradient>
 <linearGradient id="beam" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ffdda0" stop-opacity=".29"/><stop offset="1" stop-color="#ffdda0" stop-opacity="0"/></linearGradient>
 <linearGradient id="windowGlass" x2="0" y2="1"><stop stop-color="#798586" stop-opacity=".09"/><stop offset="1" stop-color="#c5bfa1" stop-opacity=".045"/></linearGradient>
 <linearGradient id="shutterFill" x2="1" y2="0"><stop stop-color="#424544"/><stop offset=".5" stop-color="#62635d"/><stop offset="1" stop-color="#424544"/></linearGradient>
@@ -71,7 +74,30 @@ function lightPose(d){
 }
 function blindPose(i){return roomPreset().windows[i]}
 function furniture(room){
- const g=$('roomLayer');g.replaceChildren();const lines=svg('g',{class:'frame-line'},g);
+ const g=$('roomLayer');g.replaceChildren();
+ // Closed material surfaces sit behind the existing construction lines. Open
+ // detail paths remain unfilled, avoiding accidental triangles and occlusion.
+ const material=svg('g',{'aria-hidden':'true'},g);
+ const surface=(d,fill='url(#furnitureMaterial)')=>svg('path',{d,fill,stroke:'#b8b09a','stroke-opacity':'.17','stroke-width':1.5},material);
+ const panel=(x,y,width,height,rx=3)=>svg('rect',{x,y,width,height,rx,fill:'url(#cabinetMaterial)',stroke:'#a9a89a','stroke-opacity':'.12'},material);
+ svg('path',{d:'M35 532H965L995 622H5Z',fill:'url(#floorMaterial)'},material);
+ if(room!=='corridor')svg('ellipse',{cx:575,cy:543,rx:330,ry:25,fill:'#090c0d',opacity:'.27'},material);
+ switch(room){
+ case 'kitchen':panel(575,158,365,140);panel(572,348,368,160);panel(294,429,416,107);surface('M253 409H689L733 429H294Z');break;
+ case 'hall':panel(610,155,177,365);panel(84,350,164,155);surface('M289 407H552V423H289Z');break;
+ case 'corridor':surface('M95 104L425 199V412L95 544Z','url(#cabinetMaterial)');surface('M655 199L935 104V544L655 412Z','url(#cabinetMaterial)');panel(500,231,66,180);surface('M160 518V151L280 190V470ZM326 451V204L388 222V427ZM870 518V151L750 190V470ZM710 451V204L678 215V433Z','#303334');break;
+ case 'living':surface('M312 421V366Q312 338 340 338H704Q732 338 732 366V421Z');panel(790,268,155,94);panel(783,408,170,81);surface('M285 459H759V480H285Z');break;
+ case 'dining':panel(753,361,178,141);for(const x of [375,530,685])panel(x-28,342,56,61,9);break;
+ case 'guest_wc':panel(384,216,146,119,5);panel(362,374,186,110);panel(692,297,105,91,8);surface('M680 389Q743 369 810 389V436Q810 471 770 475L765 522H718L711 475Q680 467 680 436Z');break;
+ case 'children':panel(160,508,555,102,35);panel(752,372,166,130);surface('M351 498H649V516H351Z');for(const [cx,cy,rx,ry] of [[223,480,8,8],[257,480,8,8],[240,493,23,23],[240,541,24,29],[213,535,10,17],[267,535,10,17],[224,565,14,10],[256,565,14,10]])svg('ellipse',{cx,cy,rx,ry,fill:'#655b48'},material);break;
+ case 'bedroom':surface('M352 352V296Q352 278 370 278H689Q707 278 707 296V352Z');panel(236,383,69,95);panel(768,383,69,95);surface('M309 514H751V540H309Z');break;
+ case 'staircase':{let d='M300 520';for(let i=0;i<10;i++)d+=`H${348+i*48}V${492-i*28}`;surface(d+'H863V267L300 563Z');break;}
+ case 'office':case 'neutral':panel(766,198,160,304);panel(431,273,176,100);surface('M357 425H748L775 442H334Z');break;
+ case 'utility':panel(434,181,393,117);panel(440,342,181,172);panel(647,342,181,172);for(const cx of [531,738])svg('circle',{cx,cy:444,r:42,fill:'#171e21'},material);panel(149,410,182,103);break;
+ case 'technical':panel(410,150,337,375);panel(821,299,112,213);panel(158,445,169,73,5);surface('M747 150L793 173V543L747 525Z');break;
+ case 'storage':panel(400,159,506,357);for(const [x,y,w,h]of [[424,217,112,64],[585,220,130,61],[760,212,111,69],[429,330,102,66],[590,332,57,64],[660,319,57,77],[766,333,109,63],[427,445,117,61],[588,444,123,62],[764,433,116,73]])surface(`M${x} ${y}h${w}v${h}h-${w}Z`);break;
+ }
+ const lines=svg('g',{class:'frame-line','style':'stroke-opacity:.65;stroke-width:1.5'},g);
  const path=d=>svg('path',{d},lines);
  const rect=(x,y,w,h,rx=0)=>svg('rect',{x,y,width:w,height:h,rx},lines);
  const circle=(cx,cy,r)=>svg('circle',{cx,cy,r},lines);

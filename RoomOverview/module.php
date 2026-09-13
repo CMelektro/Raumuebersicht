@@ -9,6 +9,8 @@ class Raumübersicht extends IPSModule
     {
         parent::Create();
         $this->RegisterPropertyString('Title', 'Küche');
+        $this->RegisterPropertyBoolean('ClimateEnabled', false);
+        $this->RegisterPropertyInteger('ClimateActual', 0);
         $this->RegisterPropertyBoolean('ShowTitle', true);
         $this->RegisterPropertyString('RoomStyle', 'kitchen');
         $this->RegisterPropertyInteger('TargetCategory', 0);
@@ -81,7 +83,7 @@ class Raumübersicht extends IPSModule
 
     private function VariableProperties()
     {
-        return array_map(fn($p) => $p . 'Status', array_merge(self::LIGHTS, self::SOCKETS, self::BLINDS));
+        return array_merge(['ClimateActual'], array_map(fn($p) => $p . 'Status', array_merge(self::LIGHTS, self::SOCKETS, self::BLINDS)));
     }
 
     private function ReadStatus($property, $types)
@@ -90,7 +92,8 @@ class Raumübersicht extends IPSModule
         if (!IPS_VariableExists($id)) return null;
         $variable = IPS_GetVariable($id);
         if (!in_array($variable['VariableType'], $types, true)) return null;
-        return GetValue($id);
+        $value = GetValue($id);
+        return is_float($value) && !is_finite($value) ? null : $value;
     }
 
     private function Snapshot()
@@ -105,7 +108,9 @@ class Raumübersicht extends IPSModule
             'backgroundColor' => '#' . sprintf('%06X', $this->ReadPropertyInteger('BackgroundColor')),
             'textColor' => '#' . sprintf('%06X', $this->ReadPropertyInteger('TextColor')),
             'targetCategory' => $validTarget ? $target : 0,
-            'lights' => [], 'sockets' => [], 'blinds' => []
+            'lights' => [], 'sockets' => [], 'blinds' => [],
+            'climate' => ['enabled' => $this->ReadPropertyBoolean('ClimateEnabled'),
+                'actual' => $this->ReadStatus('ClimateActual', [1,2])]
         ];
         foreach (self::LIGHTS as $i => $p) {
             $raw = $this->ReadStatus($p . 'Status', [0, 1, 2]);

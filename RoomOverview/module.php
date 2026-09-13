@@ -1,5 +1,5 @@
 <?php
-class Raumuebersicht extends IPSModule
+class Raumübersicht extends IPSModule
 {
     private const LIGHTS = ['Light1', 'Light2', 'Light3', 'Light4'];
     private const SOCKETS = ['Socket1', 'Socket2'];

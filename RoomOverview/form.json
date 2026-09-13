@@ -1,6 +1,6 @@
 {
   "elements": [
-    {"type":"Label","caption":"Raumübersicht 1.0.0 · eigenständige Anzeige- und Navigationskachel"},
+    {"type":"Label","caption":"Raumübersicht 1.0.1 · eigenständige Anzeige- und Navigationskachel"},
     {"type":"ExpansionPanel","caption":"Allgemein","items":[
       {"type":"ValidationTextBox","name":"Title","caption":"Raumname (auch Instanzname)"},
       {"type":"Select","name":"RoomStyle","caption":"Raummotiv","options":[

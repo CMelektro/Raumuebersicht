@@ -1,4 +1,4 @@
-# Prüfbericht Raumübersicht 1.0.0
+# Prüfbericht Raumübersicht 1.0.1
 
 - 16 Backend-Prüfungen bestanden: Konfiguration, Instanzname, Raumauswahl, Statusauswertung, Live-Aktualisierung, Zielkategorie, fehlende Variablen, Rollladenskalierung und Umkehrung, sichere HTML-Einbettung sowie gesperrte Bedienbefehle.
 - 77 Prüfungen in Chromium bestanden: 14 Raummotive in vier Kachelgrößen, Statusdarstellung, Navigation mit Maus, Enter und Leertaste, ungültige Zielkategorie sowie vollständige Lesefunktion ohne Bedienelemente.

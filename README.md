@@ -1,4 +1,4 @@
-# Raumübersicht 1.0.0
+# Raumübersicht 1.0.1
 
 Eigenständige Anzeige- und Navigationskachel für Symcon 9.0, Autor **CMelektro**.
 

@@ -32,13 +32,14 @@ class Raumübersicht extends IPSModule
             $this->RegisterPropertyInteger($p . 'Maximum', 100);
             $this->RegisterPropertyBoolean($p . 'Invert', false);
         }
-        $this->SetVisualizationType(2);
+        // Symcon 9.0: HTML-SDK. Type 2 is available only from version 9.1.
+        $this->SetVisualizationType(1);
     }
 
     public function ApplyChanges()
     {
         parent::ApplyChanges();
-        $this->SetVisualizationType(2);
+        $this->SetVisualizationType(1);
         $title = trim($this->ReadPropertyString('Title'));
         if ($title !== '' && IPS_GetName($this->InstanceID) !== $title) IPS_SetName($this->InstanceID, $title);
         foreach ($this->GetReferenceList() as $id) $this->UnregisterReference($id);
@@ -93,12 +94,16 @@ class Raumübersicht extends IPSModule
 
     private function Snapshot()
     {
+        // Retain the property name so existing category assignments survive updates.
+        $target = $this->ReadPropertyInteger('TargetCategory');
+        $validTarget = $target > 0 && $target !== $this->InstanceID
+            && (IPS_CategoryExists($target) || IPS_InstanceExists($target));
         $result = [
             'title' => $this->ReadPropertyString('Title'), 'showTitle' => false, 'showSummary' => false,
             'room' => $this->ReadPropertyString('RoomStyle'),
             'backgroundColor' => '#' . sprintf('%06X', $this->ReadPropertyInteger('BackgroundColor')),
             'textColor' => '#' . sprintf('%06X', $this->ReadPropertyInteger('TextColor')),
-            'targetCategory' => IPS_CategoryExists($this->ReadPropertyInteger('TargetCategory')) ? $this->ReadPropertyInteger('TargetCategory') : 0,
+            'targetCategory' => $validTarget ? $target : 0,
             'lights' => [], 'sockets' => [], 'blinds' => []
         ];
         foreach (self::LIGHTS as $i => $p) {

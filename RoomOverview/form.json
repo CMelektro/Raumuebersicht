@@ -1,12 +1,13 @@
 {
   "elements": [
-    {"type":"Label","caption":"Raumübersicht 1.0.1 · eigenständige Anzeige- und Navigationskachel"},
+    {"type":"Label","caption":"Raumübersicht 1.0.3 · eigenständige Anzeige- und Navigationskachel"},
     {"type":"ExpansionPanel","caption":"Allgemein","items":[
       {"type":"ValidationTextBox","name":"Title","caption":"Raumname (auch Instanzname)"},
       {"type":"Select","name":"RoomStyle","caption":"Raummotiv","options":[
         {"caption":"Küche","value":"kitchen"},{"caption":"Eingangsbereich","value":"hall"},{"caption":"Durchgangsflur","value":"corridor"},{"caption":"Wohnzimmer","value":"living"},{"caption":"Esszimmer","value":"dining"},{"caption":"Gäste-WC","value":"guest_wc"},{"caption":"Kinderzimmer","value":"children"},{"caption":"Elternschlafzimmer","value":"bedroom"},{"caption":"Treppenhaus","value":"staircase"},{"caption":"Büro","value":"office"},{"caption":"Hauswirtschaftsraum","value":"utility"},{"caption":"Technikraum","value":"technical"},{"caption":"Abstellraum","value":"storage"},{"caption":"Neutral","value":"neutral"}
       ]},
-      {"type":"SelectCategory","name":"TargetCategory","caption":"Beim Anklicken diese Raumkategorie öffnen"},
+      {"type":"SelectObject","name":"TargetCategory","caption":"Ziel beim Anklicken: Raumkachel-Instanz oder Kategorie"},
+      {"type":"Label","caption":"Wähle direkt die bedienbare Raumkachel-Instanz: Sie öffnet sich als maximierte Kachel. Bei Auswahl einer Kategorie wird zur entsprechenden Raumseite gewechselt."},
       {"type":"SelectColor","name":"BackgroundColor","caption":"Hintergrundfarbe","allowTransparent":false},
       {"type":"SelectColor","name":"TextColor","caption":"Schriftfarbe","allowTransparent":false}
     ]},
@@ -22,6 +23,6 @@
       {"type":"CheckBox","name":"Blind1Enabled","caption":"Rollladen 1 anzeigen"},{"type":"ValidationTextBox","name":"Blind1Name","caption":"Bezeichnung 1"},{"type":"SelectVariable","name":"Blind1Status","caption":"Positionsrückmeldung 1","validVariableTypes":[1,2]},{"type":"NumberSpinner","name":"Blind1Maximum","caption":"Maximalwert 1 (1, 100 oder 255)"},{"type":"CheckBox","name":"Blind1Invert","caption":"Position 1 umkehren"},
       {"type":"CheckBox","name":"Blind2Enabled","caption":"Rollladen 2 anzeigen"},{"type":"ValidationTextBox","name":"Blind2Name","caption":"Bezeichnung 2"},{"type":"SelectVariable","name":"Blind2Status","caption":"Positionsrückmeldung 2","validVariableTypes":[1,2]},{"type":"NumberSpinner","name":"Blind2Maximum","caption":"Maximalwert 2 (1, 100 oder 255)"},{"type":"CheckBox","name":"Blind2Invert","caption":"Position 2 umkehren"}
     ]},
-    {"type":"Label","caption":"Diese Instanz auf der Start- oder Übersichtsseite platzieren. Sie zeigt ausschließlich Zustände. Die gesamte Kachel öffnet die ausgewählte Raumkategorie."}
+    {"type":"Label","caption":"Diese Instanz auf der Start- oder Übersichtsseite platzieren. Sie zeigt ausschließlich Zustände. Die gesamte Kachel öffnet das ausgewählte Ziel."}
   ]
 }

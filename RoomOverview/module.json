@@ -1,0 +1,11 @@
+{
+  "id": "{CC46E1D6-B8AC-47B5-ADAD-5AA6A74DF8D6}",
+  "name": "Raumübersicht",
+  "type": 3,
+  "vendor": "CMelektro",
+  "aliases": ["Raumübersicht"],
+  "parentRequirements": [],
+  "childRequirements": [],
+  "implemented": [],
+  "prefix": "RUK"
+}

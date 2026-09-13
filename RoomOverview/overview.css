@@ -1,0 +1,16 @@
+html,body{height:100%;overflow:hidden}
+#tile.overview{height:100%;min-height:0;display:flex;flex-direction:column;gap:8px;padding:18px;overflow:hidden;cursor:pointer;border-radius:12px;position:relative}
+#tile.overview[aria-disabled=true]{cursor:default}
+#tile.overview:focus-visible{outline:2px solid var(--warm);outline-offset:-3px}
+#tile.overview:hover:not([aria-disabled=true]){box-shadow:inset 0 0 0 1px #edc58f55}
+.overview #header,.overview #controls{display:none!important}
+.overview-head{display:flex;align-items:center;gap:12px;flex:none}
+.overview-title{font-size:clamp(18px,4.5vw,26px);font-weight:550;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
+.overview-arrow{font-size:24px;color:var(--warm);line-height:1}
+.overview .scene-wrap{flex:1;min-height:0;width:100%;overflow:hidden}
+.overview .scene{width:100%;height:100%;min-height:0;max-height:none}
+.overview-status{display:flex;flex-wrap:wrap;gap:6px;flex:none;line-height:1.4}
+.overview-pill{padding:5px 9px;border:1px solid #ffffff16;background:#ffffff05;border-radius:8px;font-size:12px}
+.overview-pill.on{color:#ffe1a5;border-color:#edc58f66;background:#edc58f12}
+.overview-note{font-size:12px;opacity:.75}
+@media(max-height:260px){#tile.overview{padding:10px;gap:4px}.overview-title{font-size:18px}.overview-pill{font-size:11px;padding:3px 6px}}

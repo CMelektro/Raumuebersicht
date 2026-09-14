@@ -1,27 +1,25 @@
-# Prüfung · Raumkachel 2.4.0 / Raumübersicht 1.2.0
+# Kompatibilitätskorrektur: Raumkachel 2.4.1 / Raumübersicht 1.2.1
 
-## Umfang und Ergebnis
+## Bestätigter Fehler im ausgelieferten Code
+Beide Vorgängerversionen riefen bedingungslos SetVisualizationType(2) auf, obwohl als Mindestversion 9.0 angegeben war. Die aktuell abgerufene offizielle Dokumentation nennt für Typ 2 ausdrücklich 9.1. Der bisherige Test-Dummy akzeptierte jeden Wert und konnte diesen Kompatibilitätsfehler nicht erkennen. Die frühere Aussage „Typ 2 seit 9.0“ war falsch.
 
-- 407 Raumkachel-PHP-/Konfigurationsprüfungen bestanden.
-- 30 Raumübersicht-PHP-/Konfigurationsprüfungen bestanden.
-- 2.396 Browserprüfungen bestanden: echte vom PHP-Modul erzeugte HTML-Ausgaben, 12 Wechsel Übersicht/Raum im selben JavaScript-Dokument, 256 Aktivierungskombinationen, Klimabedienung, synchrone und asynchrone Navigationsfehler sowie alle 14 Motive.
-- 594 zusätzliche Beleuchtungsprüfungen bestanden: 14 Motive × 7 Leuchtenarten mit Ein/Aus/Deaktiviert, gültigen Lichtquellenpositionen und vier getrennten Wegelicht-Kreisen.
-- 13 neue Raumillustrationen erstellt, Neutral verwendet Büro; Bilder in beiden Modulen identisch und lokal enthalten. Einzelbilder für die Auslieferung etwa 25–51 KB, HTML-Ausgabe deutlich unter 1 MB.
+## Korrektur
+Ohne die vom Server bereitgestellte Konstante INSTANCE_VISUALIZATION_TYPE_HTML_FULLSCREEN verwenden Create und ApplyChanges den klassischen HTML-Typ 1. Nur bei vorhandener Konstante wird Vollbild registriert. Es wird keine Konstante im Produktcode nachträglich definiert.
 
-## Sichtprüfung
+Ohne HTML-Vollbildunterstützung löst die Übersicht eine gewählte Instanz zur nächsten übergeordneten Kategorie auf. Unzulässige Ziele, fehlende Kategorie und zyklische Elternketten werden abgefangen. Die gespeicherte Zielzuordnung wird nicht verändert. In Symcon 9.0 muss die Raumkachel innerhalb ihrer sichtbaren Raumkategorie liegen. Die Freigaben der tatsächlichen Visu können hier nicht überprüft werden.
 
-Alle Motive als vollständige Übersichtskachel mit aktiven Leuchten und Rollläden gerendert und betrachtet. Zusätzlich eine Vergleichsansicht aller sieben Leuchtenarten, Wegelicht im Durchgangsflur und Treppen-LED erstellt. Lichtkegel beginnen an den Leuchtenöffnungen. Bei Wandleuchten werden getrennte Verläufe für die obere und untere Abstrahlung verwendet. Wegelicht strahlt nach unten und endet in einer kurzen Bodenaufhellung; die Einbaupunkte liegen neben den Flurtüren. Treppen-LED folgt dem Handlauf und hellt den Bereich darunter auf. Die Leuchtenkörper haben geschlossene Materialflächen.
-
-## Ursache der leeren maximierten Ansicht
-
-Die alte Registrierung nutzte Typ 1, also nur normale HTML-Ansicht. Laut aktueller Symcon-Dokumentation aktiviert der numerische Typ 2 normale und maximierte HTML-Ansichten seit 9.0. Beide Module verwenden jetzt diesen Wert in Create und ApplyChanges. Die vorherige Behauptung, Wert 2 erfordere 9.1, verwechselte den Wert mit den erst ab 9.1 dokumentierten Konstantennamen.
-
-Ein zusätzlicher Fehler der alten Fassung ließ sich lokal reproduzieren: erneutes Laden im selben Dokument erzeugte doppelte globale Deklarationen. Die neue Fassung kapselt ihre Hilfsfunktionen. Der öffentliche SDK-Einstieg bleibt window.handleMessage.
+## Prüfung dieses Updates
+- 409 Raumkachel- und 39 Übersicht-PHP-Prüfungen bestanden. Die API-Simulation lehnt Typ 2 ohne passende SDK-Unterstützung jetzt ausdrücklich ab.
+- Neue und bestehende Instanzen, Umschaltung bei vorhandener Vollbild-Konstante, Kategorien, verknüpfte und verschachtelte Instanzen, Wurzelobjekte, zyklische Elternketten und ungültige Ziele geprüft.
+- 21 gezielte Browserprüfungen der vom PHP-Modul erzeugten HTML-Ausgabe: eingebettete Bilder dekodieren, wiederholter Ansichtswechsel ohne JavaScript-Fehler, Klick übergibt Kategorie 500 statt Instanz 600 an openObject.
+- HTML-Ausgaben etwa 93 KB und 108 KB; ZIP-Integrität, Modulkennungen und enthaltene Grafikdateien geprüft.
 
 ## Grenzen
+Die PHP-Schnittstelle und openObject sind lokal simuliert; das ist kein Test auf einer echten SymBox. Ein abschließender Anlagentest ist weiterhin nötig. Der native Vergrößerungspfeil bleibt bestehen. Unter Symcon 9.0 wird dessen HTML-Vollbildansicht nicht unterstützt; der Pfeil wurde nicht durch einen Eingriff in den Symcon-Client verdeckt. Die normale Raumkachel und die Navigation über Kategorien verwenden die für 9.0 dokumentierten Funktionen.
 
-PHP 8.5.10 lief mit einer simulierten Symcon-API; Chromium diente als Browser. Es gab keinen Zugriff auf eine echte SymBox oder KNX-Anlage. Ein Browser-Test mit simuliertem openObject belegt nicht die Berechtigungen, Objektfreigaben oder das Verhalten des tatsächlichen Symcon-Clients. Daher bleibt ein abschließender Test von Navigation, Vollbild und Geräteaktionen auf der Anlage erforderlich.
+Die Raumgrafiken, Wegelicht, Klimafunktionen und unabhängigen Titel entsprechen der letzten Gestaltung und wurden für diese Fehlerkorrektur nicht neu entworfen. Es handelt sich um illustrative Lichtdarstellungen, keine physikalische Lichtsimulation.
 
-Die Lichtdarstellung ist illustrativ, keine berechnete Lichtplanung. Reflektionen und Abschattungen durch Möbel werden nicht physikalisch simuliert. Bei sehr kleinen Raumkacheln mit vielen aktiven Kreisen bleibt vertikales Scrollen möglich.
-
-Quellen: [SetVisualizationType](https://www.symcon.de/de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/module/setvisualizationtype/), [openObject](https://www.symcon.de/de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/html-sdk/openobject/).
+Quellen:
+https://www.symcon.de/de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/module/setvisualizationtype/
+https://www.symcon.de/de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/konstanten/
+https://www.symcon.de/de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/html-sdk/openobject/

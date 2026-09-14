@@ -35,15 +35,15 @@ class Raumübersicht extends IPSModule
             $this->RegisterPropertyInteger($p . 'Maximum', 100);
             $this->RegisterPropertyBoolean($p . 'Invert', false);
         }
-        // Numeric type 2 supports normal and maximized HTML tiles since Symcon 9.0.
-        // The named constants were added later; deliberately use the numeric value.
-        $this->SetVisualizationType(2);
+        $this->SetVisualizationType(defined('INSTANCE_VISUALIZATION_TYPE_HTML_FULLSCREEN')
+            ? constant('INSTANCE_VISUALIZATION_TYPE_HTML_FULLSCREEN') : 1);
     }
 
     public function ApplyChanges()
     {
         parent::ApplyChanges();
-        $this->SetVisualizationType(2);
+        $this->SetVisualizationType(defined('INSTANCE_VISUALIZATION_TYPE_HTML_FULLSCREEN')
+            ? constant('INSTANCE_VISUALIZATION_TYPE_HTML_FULLSCREEN') : 1);
         // Updating a visual title must never rename the instance.
         foreach ($this->GetReferenceList() as $id) $this->UnregisterReference($id);
         foreach ($this->GetMessageList() as $id => $messages) {
@@ -109,8 +109,22 @@ class Raumübersicht extends IPSModule
     {
         // Retain the property name so existing category assignments survive updates.
         $target = $this->ReadPropertyInteger('TargetCategory');
+        $targetMessage = '';
         $validTarget = $target > 0 && $target !== $this->InstanceID
             && (IPS_CategoryExists($target) || IPS_InstanceExists($target));
+        // Symcon 9.0 cannot open HTML instances fullscreen. Navigate to their
+        // nearest containing category instead; never send an instance to openObject.
+        if ($validTarget && IPS_InstanceExists($target)
+            && !defined('INSTANCE_VISUALIZATION_TYPE_HTML_FULLSCREEN')) {
+            $seen = [];
+            while ($target > 0 && IPS_ObjectExists($target) && !isset($seen[$target])
+                && !IPS_CategoryExists($target)) {
+                $seen[$target] = true;
+                $target = IPS_GetParent($target);
+            }
+            $validTarget = $target > 0 && IPS_CategoryExists($target);
+            if (!$validTarget) $targetMessage = 'Die verknüpfte Instanz liegt in keiner Raumkategorie. Bitte eine in der Visu sichtbare Raumkategorie als Ziel auswählen.';
+        }
         $result = [
             'sceneImage' => $this->SceneImage(),
             'title' => $this->ReadPropertyString('Title'), 'showTitle' => $this->ReadPropertyBoolean('ShowTitle'), 'showSummary' => false,
@@ -118,6 +132,7 @@ class Raumübersicht extends IPSModule
             'backgroundColor' => '#' . sprintf('%06X', $this->ReadPropertyInteger('BackgroundColor')),
             'textColor' => '#' . sprintf('%06X', $this->ReadPropertyInteger('TextColor')),
             'targetCategory' => $validTarget ? $target : 0,
+            'targetMessage' => $targetMessage,
             'lights' => [], 'sockets' => [], 'blinds' => [],
             'climate' => ['enabled' => $this->ReadPropertyBoolean('ClimateEnabled'),
                 'actual' => $this->ReadStatus('ClimateActual', [1,2])]

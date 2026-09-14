@@ -2,7 +2,7 @@
   "elements": [
     {
       "type": "Label",
-      "caption": "Raumübersicht 1.2.0 · Anzeige und Navigation"
+      "caption": "Raumübersicht 1.2.1 · Anzeige und Navigation"
     },
     {
       "type": "ExpansionPanel",
@@ -105,6 +105,10 @@
           "name": "TextColor",
           "caption": "Schriftfarbe",
           "allowTransparent": false
+        },
+        {
+          "type": "Label",
+          "caption": "Symcon 9.0: Bei Auswahl einer Raumkachel wird deren übergeordnete Kategorie geöffnet. Diese Kategorie und die Raumkachel müssen in der Visu sichtbar sein. Direktes HTML-Vollbild erfordert die entsprechende SDK-Unterstützung ab 9.1."
         }
       ]
     },

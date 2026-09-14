@@ -1,7 +1,7 @@
-# Raumübersicht 1.1.0
+# Raumuebersicht 1.2.0
 
-Separate Anzeige- und Navigationskachel von CMelektro.
+Von CMelektro. Einrichtung und Update: [UPDATE-1.2.0.md](UPDATE-1.2.0.md).
 
-Einrichtung, Temperaturanzeige und Update: [UPDATE-1.1.0.md](UPDATE-1.1.0.md).
+Neue Raumgrafiken, Wegelicht, unabhängiger Kacheltitel und HTML-Darstellung auch bei vergrößerter Kachel.
 
-`Raumuebersicht-Vorschau.html` zeigt eine lokal simulierte Übersicht. Die Grafiken sind enthalten und benötigen keine externe Bildquelle. Die Kachel steuert keine Geräte.
+Vorhandene Instanzen und Variablenzuordnungen behalten. Beide Module aktualisieren, Einstellungen übernehmen und Visu neu öffnen.

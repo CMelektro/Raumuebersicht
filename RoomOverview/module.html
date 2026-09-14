@@ -14,6 +14,8 @@
 <linearGradient id="furnitureMaterial" x2=".3" y2="1"><stop stop-color="#454642"/><stop offset="1" stop-color="#292c2d"/></linearGradient>
 <linearGradient id="cabinetMaterial" x2="1" y2="1"><stop stop-color="#373c3d"/><stop offset="1" stop-color="#272a2b"/></linearGradient>
 <linearGradient id="floorMaterial" x2="0" y2="1"><stop stop-color="#a69b80" stop-opacity=".025"/><stop offset="1" stop-color="#a69b80" stop-opacity=".10"/></linearGradient>
+<linearGradient id="fixtureMetal" x2="1" y2="0"><stop stop-color="#292b2c"/><stop offset=".45" stop-color="#77766e"/><stop offset=".65" stop-color="#404345"/><stop offset="1" stop-color="#232628"/></linearGradient>
+<linearGradient id="beamUp" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ffdda0" stop-opacity="0"/><stop offset="1" stop-color="#ffdda0" stop-opacity=".29"/></linearGradient>
 <linearGradient id="beam" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ffdda0" stop-opacity=".29"/><stop offset="1" stop-color="#ffdda0" stop-opacity="0"/></linearGradient>
 <linearGradient id="windowGlass" x2="0" y2="1"><stop stop-color="#798586" stop-opacity=".09"/><stop offset="1" stop-color="#c5bfa1" stop-opacity=".045"/></linearGradient>
 <linearGradient id="shutterFill" x2="1" y2="0"><stop stop-color="#424544"/><stop offset=".5" stop-color="#62635d"/><stop offset="1" stop-color="#424544"/></linearGradient>
@@ -22,13 +24,15 @@
 </defs><ellipse cx="550" cy="320" rx="490" ry="330" fill="url(#wallShade)"/>
 <g id="roomLayer"></g><g id="blindLayer"></g><g id="lightLayer"></g><g id="socketLayer"></g></svg></section>
 <section id="controls" class="controls" aria-label="Raumbedienung"></section></main><div id="error" class="error" role="alert" hidden></div>
+<div id="bootNotice" class="error" role="status">Raumansicht wird geladen. Bleibt diese Meldung stehen, bitte die Module aktualisieren und die Visu neu öffnen.</div>
 <script>
+(function(){
 'use strict';
 const NS='http://www.w3.org/2000/svg';
 const $=id=>document.getElementById(id);
 const bound=(v,min,max)=>Math.min(max,Math.max(min,Number(v)||0));
 let state={lights:[],sockets:[],blinds:[]}, layoutKey='', drag=null;
-const icons={pendant:'M12 2v8M5 15a7 7 0 0 1 14 0H5zM9 19h6',floor:'M12 11v10M7 21h10M7 3h10l3 8H4z',spots:'M3 4h18M6 4L3 18M18 4l3 14M9 18h6',led:'M3 7h18M5 12h14M7 17h10',panel:'M3 5h18v12H3zM7 21h10',wall:'M6 3v18M6 9h9l3 6H9z',socket:'M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM9 10v3M15 10v3',blind:'M4 3h16v18H4zM4 7h16M4 11h16M4 15h16M12 18v3'};
+const icons={path:'M5 3h14v8H5zM8 8h8M9 12l-5 9M15 12l5 9M7 21h10',pendant:'M12 2v8M5 15a7 7 0 0 1 14 0H5zM9 19h6',floor:'M12 11v10M7 21h10M7 3h10l3 8H4z',spots:'M3 4h18M6 4L3 18M18 4l3 14M9 18h6',led:'M3 7h18M5 12h14M7 17h10',panel:'M3 5h18v12H3zM7 21h10',wall:'M6 3v18M6 9h9l3 6H9z',socket:'M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM9 10v3M15 10v3',blind:'M4 3h16v18H4zM4 7h16M4 11h16M4 15h16M12 18v3'};
 function el(tag,attrs={},parent){const n=document.createElement(tag);for(const[k,v]of Object.entries(attrs)){if(k==='text')n.textContent=v;else if(k==='class')n.className=v;else n.setAttribute(k,v)}if(parent)parent.append(n);return n}
 function svg(tag,attrs={},parent){const n=document.createElementNS(NS,tag);for(const[k,v]of Object.entries(attrs)){if(k==='text')n.textContent=v;else n.setAttribute(k,v)}if(parent)parent.append(n);return n}
 function send(ident,value){$('error').hidden=true;try{Promise.resolve(requestAction(ident,value)).catch(showError)}catch(e){showError(e)}}
@@ -54,6 +58,10 @@ const ROOM_PRESETS = {
  technical:{name:'Technikraum',windows:[[88,115,.64],[270,110,.64]],socket:[267,374],lights:{pendant:[620,90,65],spots:[680,68,115],led:[579,526,106],panel:[625,72,105],wall:[835,230,80],floor:[368,310,85]}},
  storage:{name:'Abstellraum',windows:[[88,115,.65],[268,110,.64]],socket:[310,483],lights:{pendant:[590,95,70],spots:[655,67,115],led:[650,283,151],panel:[635,82,110],wall:[360,322,78],floor:[280,315,85]}}
 };
+
+for(const [key,value] of Object.entries({"kitchen":{"windows":[[65,140,0.85],[275,140,0.85]],"socket":[870,323],"lights":{"pendant":[470,100,95],"led":[715,282,145],"floor":[105,325,90]}},"living":{"windows":[[65,105,0.8],[265,105,0.8]],"socket":[930,495],"lights":{"pendant":[480,130,95],"led":[460,466,145],"floor":[155,305,90],"wall":[665,190,70]}},"dining":{"windows":[[65,105,0.8],[270,105,0.8]],"socket":[880,450],"lights":{"pendant":[485,100,100],"led":[815,330,90]}},"children":{"windows":[[65,105,0.75],[245,100,0.62]],"socket":[920,480],"lights":{"pendant":[810,80,75],"spots":[530,55,115],"led":[527,490,110],"floor":[115,320,88],"wall":[765,270,65]}},"bedroom":{"windows":[[55,110,0.65],[835,110,0.65]],"socket":[860,485],"lights":{"pendant":[505,100,95],"led":[500,285,130],"wall":[195,270,60],"floor":[110,340,75]}},"guest_wc":{"windows":[[55,110,0.63],[815,95,0.63]],"socket":[625,350],"lights":{"pendant":[215,90,60],"spots":[550,70,100],"led":[452,154,65],"wall":[590,215,65]}},"office":{"windows":[[60,105,0.76],[260,100,0.76]],"socket":[285,460],"lights":{"led":[865,400,50],"pendant":[555,100,90],"floor":[170,330,85]}},"utility":{"windows":[[60,100,0.7],[240,95,0.7]],"socket":[890,340],"lights":{"led":[640,275,135],"pendant":[580,90,80],"floor":[95,340,80]}},"technical":{"windows":[[55,105,0.64],[220,100,0.64]],"socket":[300,370],"lights":{"led":[540,135,62],"pendant":[240,55,65],"spots":[640,65,95],"floor":[95,335,85]}},"storage":{"windows":[[55,100,0.65],[210,90,0.65]],"socket":[315,405],"lights":{"led":[660,283,170],"pendant":[580,80,85],"floor":[110,335,80]}},"hall":{"windows":[[60,100,0.7],[850,105,0.6]],"socket":[835,430],"lights":{"led":[461,475,73],"pendant":[435,50,70],"floor":[550,355,65]}},"staircase":{"windows":[[55,95,0.68],[250,85,0.65]],"socket":[95,490],"lights":{"led":[221,0,100],"pendant":[570,35,65],"spots":[540,30,90],"wall":[830,95,55],"floor":[70,345,75]}},"corridor":{"windows":[[403,210,0.23],[563,210,0.23]],"socket":[900,530],"lights":{"led":[500,0,100],"pendant":[500,32,55],"spots":[500,30,95],"wall":[180,330,55],"floor":[875,360,70]}}})){const p=ROOM_PRESETS[key];Object.assign(p,{windows:value.windows,socket:value.socket});Object.assign(p.lights,value.lights)}
+for(const [key,pose]of Object.entries({"kitchen":[145,455,68],"hall":[540,455,65],"corridor":[500,0,100],"living":[115,425,65],"dining":[120,435,65],"guest_wc":[185,435,60],"children":[165,415,60],"bedroom":[880,425,52],"staircase":[135,470,50],"office":[170,440,65],"utility":[160,440,60],"technical":[250,400,65],"storage":[285,440,50]}))ROOM_PRESETS[key].lights.path=pose;
+ROOM_PRESETS.kitchen.lights.wall=[445,260,65];ROOM_PRESETS.technical.lights.wall=[350,240,55];ROOM_PRESETS.utility.lights.wall=[385,270,55];ROOM_PRESETS.storage.lights.wall=[320,275,55];
 function roomPreset(){return ROOM_PRESETS[state.room]||ROOM_PRESETS.office}
 function lightPose(d){
  if(d.autoPosition===false)return [bound(d.x,0,1000),bound(d.y,0,650),bound(d.scale,30,180)];
@@ -75,178 +83,13 @@ function lightPose(d){
 function blindPose(i){return roomPreset().windows[i]}
 function furniture(room){
  const g=$('roomLayer');g.replaceChildren();
- // Closed material surfaces sit behind the existing construction lines. Open
- // detail paths remain unfilled, avoiding accidental triangles and occlusion.
- const material=svg('g',{'aria-hidden':'true'},g);
- const surface=(d,fill='url(#furnitureMaterial)')=>svg('path',{d,fill,stroke:'#b8b09a','stroke-opacity':'.17','stroke-width':1.5},material);
- const panel=(x,y,width,height,rx=3)=>svg('rect',{x,y,width,height,rx,fill:'url(#cabinetMaterial)',stroke:'#a9a89a','stroke-opacity':'.12'},material);
- svg('path',{d:'M35 532H965L995 622H5Z',fill:'url(#floorMaterial)'},material);
- if(room!=='corridor')svg('ellipse',{cx:575,cy:543,rx:330,ry:25,fill:'#090c0d',opacity:'.27'},material);
- switch(room){
- case 'kitchen':panel(575,158,365,140);panel(572,348,368,160);panel(294,429,416,107);surface('M253 409H689L733 429H294Z');break;
- case 'hall':panel(610,155,177,365);panel(84,350,164,155);surface('M289 407H552V423H289Z');break;
- case 'corridor':surface('M95 104L425 199V412L95 544Z','url(#cabinetMaterial)');surface('M655 199L935 104V544L655 412Z','url(#cabinetMaterial)');panel(500,231,66,180);surface('M160 518V151L280 190V470ZM326 451V204L388 222V427ZM870 518V151L750 190V470ZM710 451V204L678 215V433Z','#303334');break;
- case 'living':surface('M312 421V366Q312 338 340 338H704Q732 338 732 366V421Z');panel(790,268,155,94);panel(783,408,170,81);surface('M285 459H759V480H285Z');break;
- case 'dining':panel(753,361,178,141);for(const x of [375,530,685])panel(x-28,342,56,61,9);break;
- case 'guest_wc':panel(384,216,146,119,5);panel(362,374,186,110);panel(692,297,105,91,8);surface('M680 389Q743 369 810 389V436Q810 471 770 475L765 522H718L711 475Q680 467 680 436Z');break;
- case 'children':panel(160,508,555,102,35);panel(752,372,166,130);surface('M351 498H649V516H351Z');for(const [cx,cy,rx,ry] of [[223,480,8,8],[257,480,8,8],[240,493,23,23],[240,541,24,29],[213,535,10,17],[267,535,10,17],[224,565,14,10],[256,565,14,10]])svg('ellipse',{cx,cy,rx,ry,fill:'#655b48'},material);break;
- case 'bedroom':surface('M352 352V296Q352 278 370 278H689Q707 278 707 296V352Z');panel(236,383,69,95);panel(768,383,69,95);surface('M309 514H751V540H309Z');break;
- case 'staircase':{let d='M300 520';for(let i=0;i<10;i++)d+=`H${348+i*48}V${492-i*28}`;surface(d+'H863V267L300 563Z');break;}
- case 'office':case 'neutral':panel(766,198,160,304);panel(431,273,176,100);surface('M357 425H748L775 442H334Z');break;
- case 'utility':panel(434,181,393,117);panel(440,342,181,172);panel(647,342,181,172);for(const cx of [531,738])svg('circle',{cx,cy:444,r:42,fill:'#171e21'},material);panel(149,410,182,103);break;
- case 'technical':panel(410,150,337,375);panel(821,299,112,213);panel(158,445,169,73,5);surface('M747 150L793 173V543L747 525Z');break;
- case 'storage':panel(400,159,506,357);for(const [x,y,w,h]of [[424,217,112,64],[585,220,130,61],[760,212,111,69],[429,330,102,66],[590,332,57,64],[660,319,57,77],[766,333,109,63],[427,445,117,61],[588,444,123,62],[764,433,116,73]])surface(`M${x} ${y}h${w}v${h}h-${w}Z`);break;
- }
- const lines=svg('g',{class:'frame-line','style':'stroke-opacity:.65;stroke-width:1.5'},g);
- const path=d=>svg('path',{d},lines);
- const rect=(x,y,w,h,rx=0)=>svg('rect',{x,y,width:w,height:h,rx},lines);
- const circle=(cx,cy,r)=>svg('circle',{cx,cy,r},lines);
- svg('path',{d:'M35 532H965M35 532V70M35 70H965V532',opacity:'.25'},lines);
- switch(room){
- case 'kitchen':
- path('M575 158H940V298H575ZM665 158V298M755 158V298M845 158V298M557 338H952V348H557ZM572 348V508H940V348M668 349V508M768 349V508M863 349V508M730 331v-28q0-19 17-19t17 19v7M712 337h76M803 330v-32h13v32M809 298v-20M835 333v-27l8-11 8 11v27M842 295v-16M870 333v-39h16v39M875 294v-15');
- path('M253 409H689L733 429H294ZM294 429V536M710 429V536M294 443H710M441 443V533M573 443V533M382 494q-36-5-55 7q29 14 60 0M336 509l-9 87M375 509l11 87M332 559H382M533 494q-36-5-55 7q29 14 60 0M487 509l-9 87M526 509l11 87M483 559H533M650 494q-36-5-55 7q29 14 60 0M604 509l-9 87M643 509l11 87M600 559H650');
- path('M330 405l-4-25h31l-4 25M341 380v-43M341 362q-30-8-19-20q16 0 19 20M341 353q24-23 28-10q-6 17-28 10M341 371q-20-4-23-16M342 373q19-11 30-5');break;
- case 'hall':
- rect(610,155,177,365,2);rect(622,167,153,341);circle(756,340,3);path('M731 340h23M321 199H518M347 199v35m-10-6q10 15 20 0M403 199v35m-10-6q10 15 20 0M460 199v35m-10-6q10 15 20 0');
- path('M325 248l20-11 20 11 18 58-22 6-2-24v83h-31v-83l-8 24-19-6ZM402 244l18 13 11 61-18 7-12-49-12 49-18-7 12-61Z');rect(289,407,263,16,2);path('M304 423v94M537 423v94M304 471H537M331 471v-14h40v14M424 471v-14h40v14');rect(84,350,164,155,4);path('M94 360H238M94 395H238M162 360v140');break;
- case 'corridor':
- // Perspective hallway with room doors on both sides, no entry furniture.
- path('M95 104L425 199H655L935 104M95 544L425 412H655L935 544M425 199V412M655 199V412');
- path('M95 531L425 403M655 403L935 531');
- // Near and far doorways on the left wall.
- for(const [x1,y1,x2,y2,b1,b2]of [[160,151,280,190,518,470],[326,204,388,222,451,427]]){
-  path(`M${x1} ${b1}V${y1}L${x2} ${y2}V${b2}M${x1+7} ${b1-3}V${y1+11}L${x2-6} ${y2+7}V${b2+2}`);
-  const mid=(y2+b2)/2;path(`M${x2-16} ${mid}v15l-12 4`);
- }
- // Mirrored doorways on the right wall.
- for(const [x1,y1,x2,y2,b1,b2]of [[870,151,750,190,518,470],[710,204,678,215,451,433]]){
-  path(`M${x1} ${b1}V${y1}L${x2} ${y2}V${b2}M${x1-7} ${b1-3}V${y1+11}L${x2+5} ${y2+7}V${b2+2}`);
-  const mid=(y2+b2)/2;path(`M${x2+13} ${mid}v13l10 4`);
- }
- // End door and floor joints strengthen the depth impression.
- rect(500,231,66,180,1);rect(505,236,56,170,1);path('M550 325h8M534 412L512 544M470 412L318 544M603 412L749 544');
- svg('path',{d:'M330 454H737M201 504H846',opacity:'.22'},lines);break;
- case 'living':
- // Upholstered sofa: seat below the backrest, with cushions resting on the seat.
- path('M312 421V366q0-28 28-28H704q28 0 28 28v55M452 351V416M591 351V416');
- svg('rect',{x:299,y:420,width:446,height:43,rx:15,fill:'#252728'},lines);
- path('M447 428v27M594 428v27M285 459H759V480H285ZM304 480v20M739 480v20');
- svg('path',{d:'M285 465V389q0-18 17-18h9q15 0 15 18v76ZM718 465V389q0-18 17-18h9q15 0 15 18v76Z',fill:'#252728'},lines);
- svg('path',{d:'M342 428l-6-42q-1-8 7-8l54 4q8 1 7 9l-4 37q-1 7-8 7l-43-1q-7 0-7-6Z',fill:'#292b2b'},lines);
- svg('path',{d:'M642 428l-4-38q-1-9 8-10l51-5q9-1 10 8l4 41q1 8-7 9l-53 2q-8 1-9-7Z',fill:'#292b2b'},lines);
- path('M344 390q21 10 52 0M646 392q25 5 54-5');
- // Oval tabletop, visible edge and three supporting legs.
- path('M529 520v52M416 550v45M643 550v45');
- svg('ellipse',{cx:530,cy:534,rx:146,ry:29,fill:'#242627'},lines);
- path('M384 534v7a146 29 0 0 0 292 0v-7');
- // Wide television and low cabinet.
- rect(790,268,155,94,3);rect(798,276,139,78,1);path('M864 362v28M840 391h50');
- rect(783,408,170,81,3);path('M792 445H944M868 413V482M804 489v15M933 489v15');break;
- case 'dining':
- // Sideboard and rear chairs are behind the opaque tabletop.
- rect(753,361,178,141,3);path('M841 361V502M773 414h14M866 414h14M759 502v17M919 502v17');
- path('M782 359v-23h26v23M795 336v-37M795 322l-16-15M795 316l18-18');
- for(const x of [375,530,685]){rect(x-28,342,56,61,9);path(`M${x-24} 403v28M${x+24} 403v28`)}
- path('M326 429v126M731 429v126');
- svg('path',{d:'M339 402H710L744 429H307Z',fill:'#272928'},lines);path('M307 429v7H744v-7');
- // Front chairs: rounded backrests, seats and legs clearly connected.
- for(const x of [379,532,685]){
-  svg('rect',{x:x-28,y:478,width:56,height:61,rx:8,fill:'#242627'},lines);
-  path(`M${x-29} 539h58v8h-58ZM${x-24} 547v34M${x+24} 547v34`);
- }
- path('M509 405l-4-33h34l-4 33M517 372v-33M528 372v-48M518 348l-12-11M528 343l15-16');break;
- case 'guest_wc':
- rect(384,216,146,119,5);path('M347 358H563V374H347ZM362 374V484H548V374M453 374V484M431 356v-21q0-13 14-13q14 0 14 13M380 358q76 16 150 0');
- rect(692,297,105,91,8);path('M680 389q63-20 130 0v47q0 35-40 39l-5 47h-47l-7-47q-31-8-31-39ZM691 391q52-13 107 0q-53 23-107 0M691 406q56 15 106 0');rect(838,347,35,13,3);path('M856 360v37M859 399v67M577 350h33v89h-33M577 365h33');circle(746,323,5);break;
- case 'children':
- // A low rug anchors the toys and bed in the room.
- svg('rect',{x:160,y:508,width:555,height:102,rx:35,'stroke-opacity':'.24'},lines);
- svg('rect',{x:176,y:519,width:523,height:80,rx:28,'stroke-opacity':'.16'},lines);
- // House-shaped bed frame, mattress, pillow and blanket.
- path('M348 530V369L500 271L652 369V530M335 374L500 263L665 374M360 369L500 280L640 369');
- svg('rect',{x:362,y:449,width:276,height:49,rx:12,fill:'#242627'},lines);
- svg('path',{d:'M377 452q-7-3-5-10l5-18q2-7 10-6l49 4q8 1 7 8l-2 19q-1 7-8 7Z',fill:'#2a2c2b'},lines);
- path('M457 450q19 8 44 0H626M462 455v38M351 498H649V516H351ZM367 516v24M632 516v24M360 529H641');
- // Books and a small toy on a shallow shelf.
- rect(738,304,174,9,1);for(let i=0;i<5;i++)rect(749+i*23,251+(i%2)*8,16,53-(i%2)*8,1);
- circle(887,288,11);circle(879,280,4);circle(895,280,4);
- // Low toy storage with two bins.
- rect(752,372,166,130,4);path('M752 433H918M835 433V502');
- rect(765,447,55,43,3);rect(849,447,55,43,3);path('M782 456h22M865 456h22');
- // Recognizable teddy sitting on the rug.
- circle(223,480,8);circle(257,480,8);circle(240,493,23);
- svg('ellipse',{cx:240,cy:541,rx:24,ry:29},lines);
- svg('ellipse',{cx:213,cy:535,rx:10,ry:17,transform:'rotate(18 213 535)'},lines);
- svg('ellipse',{cx:267,cy:535,rx:10,ry:17,transform:'rotate(-18 267 535)'},lines);
- svg('ellipse',{cx:224,cy:565,rx:14,ry:10},lines);svg('ellipse',{cx:256,cy:565,rx:14,ry:10},lines);
- svg('ellipse',{cx:240,cy:501,rx:10,ry:8},lines);circle(232,490,1.4);circle(248,490,1.4);path('M237 498h6l-3 3ZM240 501v4');
- // Two stacked blocks and a ball, resting on the floor.
- rect(697,543,27,27,2);rect(702,519,24,24,2);path('M704 551h13v11h-13M708 527l7-5 6 5-6 6Z');
- circle(317,570,18);path('M300 570h34M317 552q-14 18 0 36M317 552q14 18 0 36');break;
- case 'bedroom':
- path('M352 352V296q0-18 18-18h319q18 0 18 18v56');
- svg('path',{d:'M356 348H704L751 514H309Z',fill:'#242627'},lines);
- path('M309 514v26H751V514M336 540v22M726 540v22');
- // Pillows lie on the mattress instead of floating on the headboard.
- svg('path',{d:'M380 368l8-34q2-8 11-7l99 4q9 1 9 9l-3 34q-1 8-10 8l-104-5q-12-1-10-9Z',fill:'#292b2b'},lines);
- svg('path',{d:'M551 374l-3-35q-1-8 8-9l99-3q10-1 12 8l8 33q2 9-8 10l-106 4q-9 0-10-8Z',fill:'#292b2b'},lines);
- path('M340 421q186 12 381 0M338 429q185 12 385 0M500 439v66');
- rect(236,383,69,95,3);rect(768,383,69,95,3);path('M241 429H300M773 429H832M259 407h25M791 407h25');break;
- case 'staircase':{
- let stair='M300 520';for(let i=0;i<10;i++)stair+=`H${348+i*48}V${492-i*28}`;path(stair+'H863M300 535L805 240H863M300 535v28M863 240v28');
- path('M300 428L804 134H861M300 422L804 128H861');for(let i=0;i<10;i++){const x=316+i*48,y=510-i*28;path(`M${x} ${y}v-90`)}path('M282 563H907M805 240V77M805 77H906M863 240V135');break;}
- case 'office': case 'neutral':
- path('M357 425H748L775 442H334ZM349 442v115M751 442v115M431 373H607V273H431ZM440 282H598V363H440ZM519 373v41M497 414h45M463 420h111M663 416h32');
- rect(766,198,160,304,2);path('M766 273H926M766 348H926M766 423H926');for(let i=0;i<6;i++)rect(780+i*22,213,15,48);
- // Office chair viewed from the back, with a seat and a wheeled base.
- svg('rect',{x:537,y:427,width:88,height:73,rx:19,fill:'#272929'},lines);
- path('M549 446q32-10 64 0M548 480h66M540 500h82q8 0 8 9v8H532v-8q0-9 8-9ZM520 475v34h12M642 475v34h-12M511 473h18M633 473h18M581 517v48M581 565l-40 14M581 565l40 14M581 565v19');
- circle(539,582,4);circle(623,582,4);circle(581,587,4);break;
- case 'utility':
- for(const x of [440,647]){rect(x,342,181,172,4);rect(x+11,355,159,24,2);circle(x+91,444,52);circle(x+91,444,42);circle(x+145,367,5);path(`M${x+30} 365h57`)}
- path('M412 333H851V343H412ZM434 181H827V298H434ZM565 181V298M696 181V298M482 492q45 11 78 0M688 493q42 10 77 0');rect(149,410,182,103,4);path('M159 425H321M159 441H321M159 457H321M159 473H321M195 420v84M245 420v84M295 420v84M168 409q3-28 36-14q-5-36 42-21q32-20 48 33');break;
- case 'technical':
- // Open distribution cabinet with four DIN-device rows.
- rect(410,150,337,375,4);rect(421,160,315,354,2);
- svg('rect',{x:429,y:199,width:299,height:303,rx:2,fill:'#242627'},lines);
- rect(434,171,148,15,1);path('M441 178H521M441 182H491');
- path('M706 168l-10 14h8l-5 12 15-18h-9l6-8Z');
- for(let row=0;row<4;row++){
-  const y=214+row*70;
-  // Wide FI/RCD at the start of each row, with a coupled lever and test button.
-  svg('rect',{x:438,y,width:61,height:45,rx:2,fill:'#2d2f2d'},lines);
-  path(`M453 ${y}v11M468 ${y}v11M483 ${y}v11M446 ${y+39}h45`);
-  svg('rect',{x:447,y:y+15,width:29,height:14,rx:2,fill:'#8a887d','stroke-opacity':'.8'},lines);
-  circle(486,y+21,4);path(`M444 ${y+7}h7M478 ${y+7}h14`);
-  rect(438,y+49,61,11,1);
-  // Eight individual miniature circuit breakers.
-  for(let col=0;col<8;col++){
-   const x=503+col*27;
-   svg('rect',{x,y,width:24,height:45,rx:1.5,fill:'#2d2f2d'},lines);
-   path(`M${x+5} ${y+7}h14M${x+5} ${y+38}h14`);
-   svg('rect',{x:x+7,y:y+14,width:10,height:16,rx:1,fill:'#8a887d','stroke-opacity':'.85'},lines);
-   rect(x,y+49,24,11,1);path(`M${x+5} ${y+54}h14`);
-  }
- }
- // Door opened to the right; cable trunking above the cabinet.
- path('M747 150l46 23V543l-46-18M757 176l25 12V522l-25-11M779 334v35M410 221h-5v19h5M410 426h-5v19h5');
- path('M454 150V109H872V293M476 150V130H850V293');
- // Small structured-cabling rack with patch-panel ports and ventilation.
- rect(821,299,112,213,3);rect(830,311,94,28,2);for(let i=0;i<6;i++)rect(836+i*13,319,8,9,1);
- rect(830,350,94,28,2);for(let i=0;i<6;i++)rect(836+i*13,358,8,9,1);
- path('M835 393H918M835 403H918M835 413H918M835 423H918M835 433H918M835 443H918M830 476H924M830 486H924');
- // Tool case below the windows, not another ambiguous appliance.
- rect(158,445,169,73,5);path('M207 445v-15h70v15M158 466H327M178 459v14h14v-14M292 459v14h14v-14');break;
- case 'storage':
- rect(400,159,506,357,2);path('M410 168V506M565 168V506M739 168V506M896 168V506M400 282H906M400 397H906M400 507H906');
- for(const [x,y,w,h]of [[424,217,112,64],[585,220,130,61],[760,212,111,69],[429,330,102,66],[590,332,57,64],[660,319,57,77],[766,333,109,63],[427,445,117,61],[588,444,123,62],[764,433,116,73]]){rect(x,y,w,h,2);path(`M${x} ${y+14}H${x+w}M${x+w*.4} ${y+28}h${w*.2}`)}
- path('M185 469V320M166 470h39l9 39h-57ZM167 481l-4 26M176 481v26M187 481v26M198 481l8 26M243 470l24-141M229 473q15-9 28 0l12 35h-49ZM234 480l-7 26M245 480v26M254 480l8 26');break;
- }
+ const uri=state.sceneImage;
+ if(!uri)svg('text',{x:500,y:330,'text-anchor':'middle',fill:'#d8d4c9','font-size':18,text:'Raumbild fehlt – Moduldateien vollständig hochladen.'},g);
+ if(uri){const img=svg('image',{x:0,y:0,width:1000,height:650,preserveAspectRatio:'none',href:uri},g);img.addEventListener('error',()=>{showError('Das Raumbild konnte nicht geladen werden.')})}
 }
 function makeBlind(d,index){const [x,y,scale]=blindPose(index),w=166,h=228;const g=svg('g',{id:d.id+'Graphic',class:'scene-device',transform:`translate(${x} ${y}) scale(${scale})`},$('blindLayer'));svg('title',{text:d.name},g);svg('rect',{x:-8,y:-12,width:w+16,height:h+24,rx:2,fill:'#1b1e1e',stroke:'#888779','stroke-opacity':'.4'},g);svg('rect',{width:w,height:h,fill:'url(#windowGlass)'},g);svg('path',{d:`M${w/2} 0V${h}M0 ${h*.54}H${w}`,stroke:'#7c8279','stroke-opacity':'.3'},g);svg('rect',{id:d.id+'Slats',width:w,height:0,fill:'url(#slats)'},g);svg('path',{id:d.id+'Bottom',d:`M0 0H${w}`,stroke:'#c8c1a9','stroke-opacity':'.65'},g);svg('path',{d:`M-12 ${h+12}H${w+12}`,stroke:'#b9b09a','stroke-opacity':'.4'},g);svg('text',{x:0,y:h+35,class:'scene-label',id:d.id+'GraphicLabel',text:d.name},g)}
-function makeLight(d){const [px,py,ps]=lightPose(d);const g=svg('g',{id:d.id+'Graphic',class:'scene-device',transform:`translate(${px} ${py}) scale(${ps/100})`},$('lightLayer'));svg('title',{text:d.name},g);const glow=svg('g',{id:d.id+'Glow',opacity:0},g);const fixture=svg('g',{class:'frame-line'},g);const source=svg('g',{id:d.id+'Source',fill:'#a7a294',stroke:'#a7a294','stroke-width':1},g);
-switch(d.type){case 'pendant':for(const x of [-70,0,70]){svg('path',{d:`M${x-23} 85L${x-83} 320H${x+83}L${x+23} 85Z`,fill:'url(#beam)',filter:'url(#soft)'},glow);svg('path',{d:`M${x} -85V53M${x-25} 84Q${x-22} 54 ${x} 53Q${x+22} 54 ${x+25} 84Z`},fixture);svg('ellipse',{cx:x,cy:84,rx:23,ry:2},source)}break;
+function makeLight(d){let [px,py,ps]=lightPose(d);if(state.room==='staircase'&&d.type==='led'&&d.autoPosition!==false){px=0;py=0;ps=100}if(state.room==='corridor'&&['led','path'].includes(d.type)&&d.autoPosition!==false){px=500;py=0;ps=100}const g=svg('g',{id:d.id+'Graphic',class:'scene-device',transform:`translate(${px} ${py}) scale(${ps/100})`},$('lightLayer'));svg('title',{text:d.name},g);const glow=svg('g',{id:d.id+'Glow',opacity:0},g);const fixture=svg('g',{class:'frame-line',style:'fill:url(#fixtureMetal)','stroke-opacity':'.7','stroke-width':1.4},g);const source=svg('g',{id:d.id+'Source',fill:'#a7a294',stroke:'#a7a294','stroke-width':1},g);
+switch(d.type){case 'pendant':for(const x of [-70,0,70]){svg('path',{d:`M${x-22} 86L${x-78} 310H${x+78}L${x+22} 86Z`,fill:'url(#beam)',filter:'url(#soft)'},glow);svg('path',{d:`M${x} -85V53M${x-25} 84Q${x-22} 54 ${x} 53Q${x+22} 54 ${x+25} 84Z`},fixture);svg('ellipse',{cx:x,cy:84,rx:23,ry:2},source)}break;
 case 'spots':
  if(state.room==='corridor'){
   for(const [y,r,w,h]of [[15,13,130,450],[83,9,75,325],[128,6,35,223]]){
@@ -256,16 +99,19 @@ case 'spots':
  }else{for(const x of (state.lights.some(l=>l.enabled&&l.type==='panel')?[-140,140]:[-90,0,90])){svg('path',{d:`M${x-6} 1L${x-75} 330H${x+75}L${x+6} 1Z`,fill:'url(#beam)',filter:'url(#soft)'},glow);svg('ellipse',{cx:x,cy:0,rx:13,ry:4},fixture);svg('ellipse',{cx:x,cy:0,rx:6,ry:1.8},source)}}break;
 case 'led':
  if(state.room==='staircase'){
-  svg('path',{d:'M0 270L480-10L490 33L0 317Z',fill:'url(#beam)',filter:'url(#soft)'},glow);
-  for(let i=0;i<10;i++)svg('path',{d:`M${i*48} ${310-i*28}h48`,stroke:'#ffdfa3','stroke-width':7,'stroke-opacity':'.28',filter:'url(#soft)'},glow);
-  svg('path',{d:'M-2 268L480-12M0 273L482-7'},fixture);
-  svg('path',{d:'M0 270L480-10','stroke-width':2},source);
+  const peers=state.lights.filter(x=>x.enabled&&x.type==='led'&&x.autoPosition!==false),n=d.autoPosition===false?1:Math.max(1,peers.length),i=d.autoPosition===false?0:Math.max(0,peers.findIndex(x=>x.id===d.id));
+  const auto=d.autoPosition!==false,x=auto?221:0,y=auto?392:270,dx=auto?553:480,dy=auto?-287:-280;
+  const strip='M'+(x+dx*i/n)+' '+(y+dy*i/n)+'L'+(x+dx*(i+1)/n)+' '+(y+dy*(i+1)/n);
+  const x1=x+dx*i/n,y1=y+dy*i/n,x2=x+dx*(i+1)/n,y2=y+dy*(i+1)/n;svg('path',{d:'M'+x1+' '+y1+'L'+x2+' '+y2+'L'+x2+' '+(y2+105)+'L'+x1+' '+(y1+105)+'Z',fill:'url(#beam)',opacity:'.5',filter:'url(#soft)'},glow);
+  svg('path',{d:strip,fill:'none',stroke:'#ffdda0','stroke-width':19,'stroke-opacity':'.35',filter:'url(#soft)'},glow);
+  svg('path',{d:strip,fill:'none',stroke:'#303436','stroke-width':5},fixture);
+  svg('path',{d:strip,fill:'none','stroke-width':2},source);
  }else if(state.room==='corridor'){
   const peers=state.lights.filter(x=>x.enabled&&x.type==='led'&&x.autoPosition!==false);
   const count=d.autoPosition===false?1:Math.max(1,peers.length);
   const rank=d.autoPosition===false?0:Math.max(0,peers.findIndex(x=>x.id===d.id));
   const segment=(x1,y1,x2,y2)=>{const a=rank/count,b=(rank+1)/count;return `M${x1+(x2-x1)*a} ${y1+(y2-y1)*a}L${x1+(x2-x1)*b} ${y1+(y2-y1)*b}`};
-  const strip=segment(-405,116,-100,8)+segment(130,8,395,116);
+  const strip=segment(-405,650,-110,400)+segment(110,400,405,650);
   svg('path',{d:strip,fill:'none',stroke:'#ffdda0','stroke-width':15,'stroke-opacity':'.42',filter:'url(#soft)'},glow);
   svg('path',{d:strip,transform:'translate(0 -3)'},fixture);
   svg('path',{d:strip,'stroke-width':2,fill:'none'},source);
@@ -273,8 +119,21 @@ case 'led':
   svg('rect',{x:-160,y:5,width:320,height:90,fill:'url(#beam)',filter:'url(#soft)'},glow);
   svg('path',{d:'M-163 0H163M-163 4H163'},fixture);svg('path',{d:'M-158 3H158'},source);
  }break;
+case 'path':{
+ const corridor=state.room==='corridor'&&d.autoPosition!==false;
+ const peers=state.lights.filter(x=>x.enabled&&x.type==='path'&&x.autoPosition!==false),rank=Math.max(0,peers.findIndex(x=>x.id===d.id));
+ const spots=corridor?[[-335,500,.85],[-128,360,.45],[128,360,.45],[335,500,.85]].filter((p,i)=>i%Math.max(1,peers.length)===rank):[[0,0,1]];
+ for(const [x,y,k]of spots){
+  svg('path',{d:'M'+(x-7*k)+' '+(y+6*k)+'L'+(x-55*k)+' '+(y+92*k)+'Q'+x+' '+(y+106*k)+' '+(x+55*k)+' '+(y+92*k)+'L'+(x+7*k)+' '+(y+6*k)+'Z',fill:'url(#beam)',filter:'url(#soft)'},glow);
+  svg('ellipse',{cx:x,cy:y+95*k,rx:56*k,ry:11*k,fill:'#ffdca0',opacity:'.12',filter:'url(#soft)'},glow);
+  svg('rect',{x:x-18*k,y:y-18*k,width:36*k,height:38*k,rx:3*k,fill:'url(#fixtureMetal)',stroke:'#9a978d','stroke-width':1},fixture);
+  svg('rect',{x:x-12*k,y:y-10*k,width:24*k,height:20*k,rx:1,fill:'#111618',stroke:'none'},fixture);
+  svg('path',{d:'M'+(x-9*k)+' '+(y+6*k)+'h'+(18*k),'stroke-width':3*k,fill:'none'},source);
+ }
+ break;
+}
 case 'panel':svg('path',{d:'M-75 18L-150 255H150L75 18Z',fill:'url(#beam)',filter:'url(#soft)'},glow);svg('path',{d:'M-83-7H68L88 18H-63ZM-63 18v5H88V18'},fixture);svg('path',{d:'M-77-3H65L78 14H-63Z','fill-opacity':'.4'},source);break;
-case 'wall':svg('path',{d:'M-18 15L-88 170H88L18 15ZM-18-12L-55-100H55L18-12Z',fill:'url(#beam)',filter:'url(#soft)'},glow);svg('path',{d:'M-23-15H23V18H-23ZM0 18v9'},fixture);svg('path',{d:'M-20 17H20M-20-14H20'},source);break;
+case 'wall':svg('path',{d:'M-18 19L-88 170H88L18 19Z',fill:'url(#beam)',filter:'url(#soft)'},glow);svg('path',{d:'M-18-16L-55-100H55L18-16Z',fill:'url(#beamUp)',filter:'url(#soft)'},glow);svg('path',{d:'M-23-15H23V18H-23ZM0 18v9'},fixture);svg('path',{d:'M-20 17H20M-20-14H20'},source);break;
 default:svg('path',{d:'M-26 31L-95 230H95L26 31Z',fill:'url(#beam)',filter:'url(#soft)'},glow);svg('path',{d:'M-23-25H23L38 31H-38ZM0 32V225M-39 228Q0 217 39 228M-39 228H39'},fixture);svg('path',{d:'M-34 30H34'},source);break}}
 function makeSocket(d,index){
  const [sx,sy]=roomPreset().socket;
@@ -288,7 +147,7 @@ function makeSocket(d,index){
 }
 function rebuild(){
  // Narrow the corridor consistently, including all optional fixtures.
- const sceneTransform=state.room==='corridor'?'translate(118.8 0) scale(.78 1)':'translate(0 0)';
+ const sceneTransform='translate(0 0)';
  for(const id of ['roomLayer','blindLayer','lightLayer','socketLayer'])$(id).setAttribute('transform',sceneTransform);
  const devices=active();$('controls').replaceChildren();$('lightLayer').replaceChildren();$('blindLayer').replaceChildren();$('socketLayer').replaceChildren();furniture(state.room);state.blinds.forEach((d,i)=>{if(d.enabled)makeBlind(d,i)});for(const d of state.lights)if(d.enabled){if(d.useSwitch||d.useDim)buildCard(d,'light');makeLight(d)}state.sockets.forEach((d,i)=>{if(d.enabled){buildCard(d,'socket');makeSocket(d,i)}});for(const d of state.blinds)if(d.enabled&&(d.useMove||d.useStop||d.usePosition))buildCard(d,'blind');$('tile').classList.toggle('many',$('controls').children.length>4);if(!devices.length)el('div',{class:'empty',text:'Keine Kreise aktiviert'},$('controls'))}
 function paint(){const title=typeof state.title==='string'?state.title:'';const showTitle=state.showTitle!==false&&title.trim()!=='';const showSummary=state.showSummary!==false;$('title').textContent=title;$('title').hidden=!showTitle;$('summary').hidden=!showSummary;$('header').hidden=!showTitle&&!showSummary;$('tile').classList.toggle('no-header',!showTitle&&!showSummary);document.documentElement.style.setProperty('--bg',/^#[\da-f]{6}$/i.test(state.backgroundColor)?state.backgroundColor:'#202124');document.documentElement.style.setProperty('--ink',/^#[\da-f]{6}$/i.test(state.textColor)?state.textColor:'#ffffff');
@@ -303,4 +162,7 @@ for(const d of [...state.lights,...state.sockets]){if(!d.enabled)continue;const 
 for(const d of state.blinds){if(!d.enabled)continue;const known=d.position!==null&&Number.isFinite(Number(d.position));const p=known?bound(d.position,0,100):0;const text=known?Math.round(p)+' % geschlossen':'Position unbekannt';if($(d.id+'Card')){$(d.id+'Name').textContent=d.name;$(d.id+'State').textContent=text;$(d.id+'Card').classList.toggle('on',known&&p>0)}for(const a of ['Up','Down','Stop'])if($(d.id+a))$(d.id+a).disabled=!(a==='Stop'?d.canStop:d.canMove);if($(d.id+'Range')){if(drag!==d.id)setRange(d.id,known?p:null);$(d.id+'Range').disabled=!d.canPosition}$(d.id+'Slats').setAttribute('height',String(known?228*p/100:228));$(d.id+'Slats').setAttribute('opacity',known?'1':'.12');$(d.id+'Bottom').setAttribute('d',`M0 ${228*p/100}H166`);$(d.id+'Bottom').setAttribute('opacity',known?'1':'0');$(d.id+'GraphicLabel').textContent=d.name+' · '+(known?Math.round(p)+' %':'—')}
 const lights=state.lights.filter(d=>d.enabled);const count=lights.filter(d=>d.on===true).length;const sockets=state.sockets.filter(d=>d.enabled&&d.on===true).length;$('summaryText').textContent=lights.length?`${count} von ${lights.length} Lichtkreisen ein`:'Keine Lichtkreise aktiviert';if(sockets)$('summaryText').textContent+=` · ${sockets} Schaltkreis${sockets>1?'e':''} ein`;$('dot').classList.toggle('on',count+sockets>0)}
 function handleMessage(data){let next;try{next=typeof data==='string'?JSON.parse(data):data}catch(e){return}if(next&&next.error){showError();return}if(!next||!Array.isArray(next.lights))return;state={...next,sockets:next.sockets||[],blinds:next.blinds||[]};const key=JSON.stringify([state.room,...active().map(d=>[d.id,d.type,d.name,d.useSwitch,d.useDim,d.useMove,d.useStop,d.usePosition,d.x,d.y,d.scale,d.autoPosition])]);if(key!==layoutKey){drag=null;layoutKey=key;rebuild()}paint()}
+/*CM_EXTENSIONS*/
+window.handleMessage=function(data){try{handleMessage(data);$('bootNotice').hidden=true}catch(error){console.error('CMelektro Raumansicht:',error);$('bootNotice').textContent='Die Raumansicht konnte nicht geladen werden. Bitte die Module aktualisieren und die Visu neu öffnen.';$('bootNotice').hidden=false}};
+})();
 </script></body></html>

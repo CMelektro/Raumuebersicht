@@ -2,7 +2,7 @@
   "elements": [
     {
       "type": "Label",
-      "caption": "Raumübersicht 1.1.0 · Anzeige und Navigation"
+      "caption": "Raumübersicht 1.2.0 · Anzeige und Navigation"
     },
     {
       "type": "ExpansionPanel",
@@ -11,7 +11,7 @@
         {
           "type": "ValidationTextBox",
           "name": "Title",
-          "caption": "Raumname (auch Instanzname)"
+          "caption": "Titel in der Kachel (unabhängig vom Instanznamen)"
         },
         {
           "type": "CheckBox",
@@ -150,6 +150,10 @@
             {
               "caption": "Wandleuchte",
               "value": "wall"
+            },
+            {
+              "caption": "Wegelicht (Wandeinbau, bodennah)",
+              "value": "path"
             }
           ]
         },
@@ -207,6 +211,10 @@
             {
               "caption": "Wandleuchte",
               "value": "wall"
+            },
+            {
+              "caption": "Wegelicht (Wandeinbau, bodennah)",
+              "value": "path"
             }
           ]
         },
@@ -264,6 +272,10 @@
             {
               "caption": "Wandleuchte",
               "value": "wall"
+            },
+            {
+              "caption": "Wegelicht (Wandeinbau, bodennah)",
+              "value": "path"
             }
           ]
         },
@@ -321,6 +333,10 @@
             {
               "caption": "Wandleuchte",
               "value": "wall"
+            },
+            {
+              "caption": "Wegelicht (Wandeinbau, bodennah)",
+              "value": "path"
             }
           ]
         },

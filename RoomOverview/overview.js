@@ -7,8 +7,16 @@ const roomTitle=el('span',{class:'overview-title'},head);
 const arrow=el('span',{class:'overview-arrow',text:'›','aria-hidden':'true'},head);
 const status=el('div',{class:'overview-status','aria-live':'polite'},tile);
 const note=el('div',{class:'overview-note'},tile);
-let target=0,statusKey='';
-function openRoom(){if(!target)return;try{openObject(target)}catch(error){note.textContent='Der Raum konnte nicht geöffnet werden.';note.hidden=false}}
+let target=0,statusKey='',opening=false;
+async function openRoom(){
+ if(!target||opening)return;
+ opening=true;
+ try{
+  if(typeof window.openObject!=='function')throw Error('Die Navigation ist in dieser Ansicht nicht verfügbar.');
+  await window.openObject(target);
+ }catch(error){note.textContent='Ziel '+target+' konnte nicht geöffnet werden. '+(error?.message||'Bitte die Zielzuordnung und Freigabe in dieser Visu prüfen.');note.hidden=false}
+ finally{setTimeout(()=>opening=false,500)}
+}
 tile.addEventListener('click',openRoom);
 tile.addEventListener('keydown',event=>{if((event.key==='Enter'||event.key===' ')&&!event.repeat){event.preventDefault();openRoom()}});
 handleMessage=function(data){

@@ -35,16 +35,16 @@ class Raumübersicht extends IPSModule
             $this->RegisterPropertyInteger($p . 'Maximum', 100);
             $this->RegisterPropertyBoolean($p . 'Invert', false);
         }
-        // Symcon 9.0: HTML-SDK. Type 2 is available only from version 9.1.
-        $this->SetVisualizationType(1);
+        // Numeric type 2 supports normal and maximized HTML tiles since Symcon 9.0.
+        // The named constants were added later; deliberately use the numeric value.
+        $this->SetVisualizationType(2);
     }
 
     public function ApplyChanges()
     {
         parent::ApplyChanges();
-        $this->SetVisualizationType(1);
-        $title = trim($this->ReadPropertyString('Title'));
-        if ($title !== '' && IPS_GetName($this->InstanceID) !== $title) IPS_SetName($this->InstanceID, $title);
+        $this->SetVisualizationType(2);
+        // Updating a visual title must never rename the instance.
         foreach ($this->GetReferenceList() as $id) $this->UnregisterReference($id);
         foreach ($this->GetMessageList() as $id => $messages) {
             foreach ($messages as $message) $this->UnregisterMessage($id, $message);
@@ -68,9 +68,8 @@ class Raumübersicht extends IPSModule
 
     public function GetVisualizationTile()
     {
-        $html = file_get_contents(__DIR__ . '/module.html');
-        $extra = '<style>' . file_get_contents(__DIR__ . '/overview.css') . '</style><script>'
-            . file_get_contents(__DIR__ . '/overview.js') . '</script><script>handleMessage('
+        $html = str_replace('/*CM_EXTENSIONS*/', file_get_contents(__DIR__ . '/overview.js'), file_get_contents(__DIR__ . '/module.html'));
+        $extra = '<style>' . file_get_contents(__DIR__ . '/overview.css') . '</style><script>window.handleMessage('
             . json_encode($this->Snapshot(), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)
             . ')</script>';
         return str_replace('</body>', $extra . '</body>', $html);
@@ -96,6 +95,16 @@ class Raumübersicht extends IPSModule
         return is_float($value) && !is_finite($value) ? null : $value;
     }
 
+    private function SceneImage()
+    {
+        $room = $this->ReadPropertyString('RoomStyle');
+        $allowed = ['kitchen','hall','corridor','living','dining','guest_wc','children','bedroom','staircase','office','utility','technical','storage','neutral'];
+        if (!in_array($room, $allowed, true)) $room = 'neutral';
+        if ($room === 'neutral') $room = 'office';
+        $path = __DIR__ . '/assets/rooms/' . $room . '.jpg';
+        return is_file($path) ? 'data:image/jpeg;base64,' . base64_encode(file_get_contents($path)) : '';
+    }
+
     private function Snapshot()
     {
         // Retain the property name so existing category assignments survive updates.
@@ -103,6 +112,7 @@ class Raumübersicht extends IPSModule
         $validTarget = $target > 0 && $target !== $this->InstanceID
             && (IPS_CategoryExists($target) || IPS_InstanceExists($target));
         $result = [
+            'sceneImage' => $this->SceneImage(),
             'title' => $this->ReadPropertyString('Title'), 'showTitle' => $this->ReadPropertyBoolean('ShowTitle'), 'showSummary' => false,
             'room' => $this->ReadPropertyString('RoomStyle'),
             'backgroundColor' => '#' . sprintf('%06X', $this->ReadPropertyInteger('BackgroundColor')),

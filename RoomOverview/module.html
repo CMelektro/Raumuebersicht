@@ -64,6 +64,7 @@ for(const [key,pose]of Object.entries({"kitchen":[145,455,68],"hall":[540,455,65
 ROOM_PRESETS.kitchen.lights.wall=[445,260,65];ROOM_PRESETS.technical.lights.wall=[350,240,55];ROOM_PRESETS.utility.lights.wall=[385,270,55];ROOM_PRESETS.storage.lights.wall=[320,275,55];
 // Additional room motifs; existing presets remain unchanged.
 ROOM_PRESETS.guestroom={name:'Gästezimmer',windows:[[55,110,.65],[675,110,.65]],socket:[765,465],lights:{pendant:[505,85,80],spots:[500,65,110],led:[500,277,70],panel:[505,65,85],wall:[735,260,60],floor:[185,320,75],path:[125,430,60]}};
+ROOM_PRESETS.bathroom={name:'Hauptbadezimmer',windows:[[665,85,.55],[815,85,.55]],socket:[670,342],lights:{pendant:[765,45,65],spots:[500,45,110],led:[452,139,97],panel:[470,50,90],wall:[660,230,55],floor:[675,315,65],path:[665,425,50]}};
 function roomPreset(){return ROOM_PRESETS[state.room]||ROOM_PRESETS.office}
 function lightPose(d){
  if(d.autoPosition===false)return [bound(d.x,0,1000),bound(d.y,0,650),bound(d.scale,30,180)];

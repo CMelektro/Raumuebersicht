@@ -1,15 +1,14 @@
-# Raumuebersicht 1.2.2: zusätzliche Raummotive
+# Raumuebersicht 1.2.3 – Hauptbadezimmer
 
-Ausschließlich die gewünschte Grafik-Erweiterung auf Basis von 1.2.1:
-- Gästezimmer als neues Raummotiv.
-- Automatisch platzierte LED-Leiste im vorhandenen Treppenhaus in die Wand oberhalb des Handlaufs versetzt.
+Ergänzt ausschließlich die Raumauswahl „Hauptbadezimmer“ und das passende Raummotiv. Alle vorhandenen Räume, LED-Wandposition im Treppenhaus, Bedienfunktionen, Variablenzuordnungen, Titel- und Navigationseinstellungen bleiben unverändert.
 
-Das Gästezimmer steht in Raumkachel und Raumübersicht unter Allgemein → Raummotiv zur Wahl. Bestehende Raumauswahlen und Zuordnungen bleiben erhalten. Für die neue Standardposition der Treppenhaus-LED muss deren automatische Positionierung aktiv sein; eigene manuelle Positionen bleiben erhalten.
+## Update
+ZIP entpacken. Inhalt von Raumuebersicht in das bestehende entsprechende Repository hochladen; library.json und RoomOverview liegen direkt auf der obersten Ebene. Die neue Datei RoomOverview/assets/rooms/bathroom.jpg mit hochladen. In Symcon aktualisieren und Visu neu öffnen. Unter Allgemein → Raummotiv → Hauptbadezimmer auswählen. Bestehende Instanzen können bleiben.
 
-## Installation
-ZIP entpacken und den Inhalt von Raumuebersicht in das bestehende entsprechende Repository hochladen. library.json und RoomOverview müssen auf der obersten Ebene liegen. Die neue Datei unter RoomOverview/assets/rooms vollständig mit hochladen. Bibliothek in Symcon aktualisieren und Visu neu öffnen. Kein Löschen oder Neuanlegen von Instanzen notwendig.
+Raumkachel: 2.4.3 / Build 20. Raumübersicht: 1.2.3 / Build 10. Autor CMelektro.
 
-## Prüfungen und unveränderte Funktionen
-454 PHP-Prüfungen und 23 gezielte Browserprüfungen bestanden. Gästezimmer und Treppenhaus gerendert betrachtet, LED Ein/Aus/Deaktiviert sowie vier separate LED-Kreise geprüft. Alte Grafikdateien, CSS und die Skripte für Klima und Navigation sind bytegleich mit der Vorversion. Die einzige PHP-Änderung ergänzt zwei zulässige Bildnamen; Befehlsverarbeitung, Symcon-Registrierung und Variablenzuordnung sind unverändert. Vorherige Einschränkungen gelten weiterhin. Kein Test auf einer echten SymBox.
+## Prüfung
+454 lokale PHP-Prüfungen und 13 gezielte Browserprüfungen bestanden, beide Ansichten gerendert geprüft. Enthaltenes JPEG dekodiert; LED Ein/Aus/Deaktiviert und vier getrennte LED-Kreise geprüft. Dateivergleich bestätigt: PHP nur um den Bildnamen ergänzt, HTML nur um das Raum-Preset; alle bisherigen Assets und übrigen Funktionsdateien bytegleich mit Vorversion. Kein Test auf der realen SymBox.
 
-Gästezimmer mit der integrierten Bildgenerierung erzeugt: Einzelbett, Nachttisch, Gepäckbank und Schrank. Dunkler Architektur-CGI-Stil, keine eingebrannten Leuchten; Leuchten bleiben separat schaltbare Grafikelemente.
+## Motiv
+Mit der integrierten Bildgenerierung erstellt. Motivvorgabe: hochwertiges dunkles Architektur-CGI eines Hauptbadezimmers mit bodengleicher Dusche, Doppelwaschtisch und freistehender Badewanne; Anthrazit und Nussbaum, ohne eingebrannte Leuchten, Beschriftung oder Personen. Leuchten bleiben interaktive Grafikelemente.

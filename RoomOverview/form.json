@@ -2,7 +2,7 @@
   "elements": [
     {
       "type": "Label",
-      "caption": "Raumübersicht 1.2.2 · Anzeige und Navigation"
+      "caption": "Raumübersicht 1.2.3 · Anzeige und Navigation"
     },
     {
       "type": "ExpansionPanel",
@@ -46,6 +46,10 @@
             {
               "caption": "Esszimmer",
               "value": "dining"
+            },
+            {
+              "caption": "Hauptbadezimmer",
+              "value": "bathroom"
             },
             {
               "caption": "Gäste-WC",

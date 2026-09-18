@@ -98,7 +98,7 @@ class Raumübersicht extends IPSModule
     private function SceneImage()
     {
         $room = $this->ReadPropertyString('RoomStyle');
-        $allowed = ['kitchen','hall','corridor','living','dining','guest_wc','children','bedroom','guestroom','staircase','office','utility','technical','storage','neutral'];
+        $allowed = ['kitchen','hall','corridor','living','dining','guest_wc','bathroom','children','bedroom','guestroom','staircase','office','utility','technical','storage','neutral'];
         if (!in_array($room, $allowed, true)) $room = 'neutral';
         if ($room === 'neutral') $room = 'office';
         $path = __DIR__ . '/assets/rooms/' . $room . '.jpg';

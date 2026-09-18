@@ -2,7 +2,7 @@
   "elements": [
     {
       "type": "Label",
-      "caption": "Raumübersicht 1.2.1 · Anzeige und Navigation"
+      "caption": "Raumübersicht 1.2.2 · Anzeige und Navigation"
     },
     {
       "type": "ExpansionPanel",
@@ -58,6 +58,10 @@
             {
               "caption": "Elternschlafzimmer",
               "value": "bedroom"
+            },
+            {
+              "caption": "Gästezimmer",
+              "value": "guestroom"
             },
             {
               "caption": "Treppenhaus",
